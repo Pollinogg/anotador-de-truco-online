@@ -71,17 +71,87 @@
   .win{animation:glow 1s ease-in-out infinite alternate}
   @keyframes glow{from{fill:var(--fg)}to{fill:var(--acc)}}
   #spacer{flex:1}
-  #nuevo{flex:none;margin-bottom:calc(clamp(20px,5vh,54px) + env(safe-area-inset-bottom));padding:9px 20px;font:400 18px 'Titillium Web',sans-serif;
+  .brow{flex:none;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 10px;margin-bottom:calc(clamp(20px,5vh,54px) + env(safe-area-inset-bottom))}
+  .brow #nuevo,.brow #histBtn{margin-bottom:0;padding:9px 16px}
+  #nuevo,#histBtn{flex:none;margin-bottom:calc(clamp(20px,5vh,54px) + env(safe-area-inset-bottom));padding:9px 20px;font:400 18px 'Titillium Web',sans-serif;
     color:var(--nfg);background:var(--nbg);border:1.5px solid var(--nbd);border-radius:9px;cursor:pointer;transition:transform .12s}
-  #nuevo:active{transform:scale(.94)}
+  #nuevo:active,#histBtn:active{transform:scale(.94)}
+  #hsheet{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;justify-content:flex-end}
+  #hsheet[hidden]{display:none}
+  #hsheet .back{flex:1;background:rgba(0,0,0,.5)}
+  #hsheet .panel{background:var(--hdr);color:var(--nfg);border-top:2px solid var(--hdrline);padding:14px 14px calc(14px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0;animation:up .2s ease-out;text-align:center;max-height:75dvh;display:flex;flex-direction:column}
+  #hsheet .st{font-size:20px;color:var(--acc)}
+  #hsheet .hl{overflow-y:auto;text-align:left;margin:10px 0 12px;-webkit-overflow-scrolling:touch}
+  .he{display:flex;gap:12px;padding:8px 4px;border-bottom:1px solid var(--line);font-size:17px}
+  .he time{color:var(--acc);font-variant-numeric:tabular-nums;flex:none}
+  .he.empty{justify-content:center;opacity:.7;border:0}
+
+  /* ---- menú: páginas ---- */
+  .opt .chev{margin-left:auto;color:var(--acc,#f7c21c);font-size:22px;line-height:1}
+  .opt.back{color:#d6a431;font-size:16px;border-bottom:1px solid rgba(214,164,49,.3);border-radius:8px 8px 0 0;margin-bottom:4px}
+  .opt.back span{width:28px;text-align:center;font-size:22px}
+  .sw.plus{display:grid;place-items:center;font-size:20px;line-height:1;background:rgba(255,255,255,.12);color:#f7c21c}
+
+  /* ---- otros juegos ---- */
+  .view{display:none;flex:1;min-height:0;width:100%;overflow-y:auto;padding:12px 14px calc(18px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;color:var(--fg)}
+  body[data-game=generala] #vGenerala,body[data-game=escoba] #vEscoba,body[data-game=chinchon] #vChinchon{display:block}
+  body:not([data-game=truco]) #board,body:not([data-game=truco]) #spacer,body:not([data-game=truco]) #brow{display:none}
+  .card{background:var(--nbg);color:var(--nfg);border:1.5px solid var(--nbd);border-radius:12px;padding:10px;margin-bottom:12px}
+  .b{font:400 17px 'Titillium Web',sans-serif;color:var(--nfg);background:transparent;border:1.5px solid var(--nbd);border-radius:10px;padding:9px 12px;cursor:pointer;transition:transform .1s;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .b:active{transform:scale(.94)}
+  .b.on{background:var(--acc);color:var(--hdr);border-color:var(--acc)}
+  .b.sm{padding:4px 13px;font-size:22px;line-height:1.1}
+  .b:disabled{opacity:.4}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:4px 0 6px}
+  .seg{display:flex;gap:8px;align-items:center;margin-bottom:12px;color:var(--fg);font-size:17px}
+  .seg span{margin-right:4px}
+  .seg .b{padding:6px 16px}
+  .ban{background:var(--acc);color:var(--hdr);text-align:center;padding:10px;border-radius:10px;margin-bottom:12px;font-size:19px;animation:pop .25s ease-out}
+  input.nm,input.ni{user-select:text;-webkit-user-select:text;background:transparent;border:0;border-bottom:1px dashed var(--line);color:var(--nfg);font:400 16px 'Titillium Web',sans-serif;text-align:center;width:100%;padding:3px 0;border-radius:0;outline:none}
+  input.nm:focus,input.ni:focus{border-bottom:1.5px solid var(--acc)}
+  .t2{color:var(--acc);font-size:14px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+  .gt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:18px}
+  .gt th{padding:2px 4px 6px;font-weight:400}
+  .gt td{border-top:1px solid var(--line);text-align:center;height:38px;padding:0}
+  .gt td.rl{width:88px;text-align:left;padding-left:6px;color:var(--acc);font-size:16px}
+  .gt td.neg{color:var(--acc)}
+  .gt td.out{text-decoration:line-through;opacity:.6}
+  .gt td.out small{display:block;text-decoration:none;font-size:11px}
+  .gt tr.tot td{font-weight:600;font-size:22px;border-top:2px solid var(--nbd);height:44px}
+  .gt td.lead{color:var(--acc)}
+  .cell{width:100%;height:100%;min-height:38px;background:none;border:0;color:var(--nfg);font:inherit;cursor:pointer}
+  .cell:active{background:rgba(127,127,127,.3)}
+  .cell.x{opacity:.5}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pl{text-align:center}
+  .big{font-size:56px;line-height:1.1;margin:4px 0}
+  .big.lead{color:var(--acc)}
+  .pm{display:flex;gap:10px;justify-content:center}
+  .rw{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px;align-items:center;margin:7px 0}
+  .ctr{display:flex;align-items:center;justify-content:space-between;gap:4px}
+  .ctr b{font-size:22px;font-weight:600;min-width:20px;text-align:center}
+  .prev{text-align:center;margin:8px 0;color:var(--acc)}
+  .hist div{padding:3px 0;border-bottom:1px solid var(--line)}
+  .hist div:last-child{border:0}
+  .ins{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:10px;margin:6px 0 10px}
+  .in{display:flex;flex-direction:column;gap:6px;align-items:center}
+  .in.out{opacity:.5;justify-content:center;height:100%}
+  .in .b.sm{font-size:15px;padding:3px 10px}
+  #sheet{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;justify-content:flex-end}
+  #sheet[hidden]{display:none}
+  #sheet .back{flex:1;background:rgba(0,0,0,.5)}
+  #sheet .panel{background:var(--hdr);color:var(--nfg);border-top:2px solid var(--hdrline);padding:14px 14px calc(14px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0;animation:up .2s ease-out;text-align:center}
+  #sheet .st{font-size:20px;color:var(--acc)}
+  #sheet .sb{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+  @keyframes up{from{transform:translateY(40px);opacity:0}}
 </style>
 </head>
-<body>
+<body data-game="truco">
 <canvas id="bgc"></canvas>
 <div id="app">
   <header>
     <span></span>
-    <h1>Anotador</h1>
+    <h1 id="title">Anotador</h1>
     <button id="menuBtn" aria-label="Estilos" aria-haspopup="true"><svg viewBox="0 0 24 24"><path d="M6 8h12M6 12h12M6 16h12"/></svg></button>
     <div id="menu" hidden></div>
   </header>
@@ -103,8 +173,19 @@
       <g class="btn" data-t="1" data-d="-1"><circle cx="630" cy="445" r="36"/><path d="M612 445h36"/></g>
     </svg>
     <div id="spacer"></div>
-    <button id="nuevo">Nuevo partido</button>
+    <div class="brow" id="brow"><button id="nuevo">Nuevo partido</button><button id="histBtn" data-act="hist">Historial de puntos</button></div>
+    <section class="view" id="vGenerala"></section>
+    <section class="view" id="vEscoba"></section>
+    <section class="view" id="vChinchon"></section>
   </main>
+  <div id="sheet" hidden>
+    <div class="back" data-act="closesheet"></div>
+    <div class="panel"><div class="st" id="sheetT"></div><div class="sb" id="sheetB"></div><button class="b" data-act="closesheet">Cancelar</button></div>
+  </div>
+  <div id="hsheet" hidden>
+    <div class="back" data-act="closesheet"></div>
+    <div class="panel"><div class="st" id="hT"></div><div class="hl" id="hL"></div><button class="b" data-act="closesheet">Cerrar</button></div>
+  </div>
 </div>
 
 <script>
@@ -140,7 +221,22 @@ const THEMES={
     mark:MATCH},
   neon:{name:'Neón',bg:'carbon',sw:['#141414','#39ff88'],tc:'#0b0b0b',
     css:{'--fg':'#fff','--line':'rgba(57,255,136,.55)','--acc':'#39ff88','--hdr':'#0b0b0b','--hdrline':'rgba(57,255,136,.7)','--pat':'rgba(57,255,136,.05)','--btn':'#39ff88','--rip':'rgba(57,255,136,.4)','--mf':'drop-shadow(0 0 5px rgba(57,255,136,.7))','--nbg':'rgba(10,10,10,.85)','--nfg':'#39ff88','--nbd':'rgba(57,255,136,.7)'},
-    mark:{type:'glow',body:'#7dffb4',T:5}}
+    mark:{type:'glow',body:'#7dffb4',T:5}},
+  atardecer:{name:'Atardecer',bg:'atardecer',sw:['#c4455a','#ffd9a0'],tc:'#2a1a4a',
+    css:{'--fg':'#fff','--line':'rgba(255,235,200,.6)','--acc':'#ffe3a8','--hdr':'#2a1a4a','--hdrline':'rgba(255,200,150,.7)','--pat':'rgba(255,200,150,.07)','--btn':'#fff','--rip':'rgba(255,255,255,.4)','--mf':'drop-shadow(0 2px 3px rgba(60,10,40,.55))','--nbg':'rgba(50,15,50,.72)','--nfg':'#fff','--nbd':'rgba(255,220,180,.7)'},
+    mark:{type:'chalk',body:'#fff6e6',T:5.5}},
+  bosque:{name:'Bosque',bg:'bosque',sw:['#1d4a2c','#ecd9a8'],tc:'#0b2014',
+    css:{'--fg':'#fff','--line':'#b9d79a','--acc':'#cdeb9c','--hdr':'#0b2014','--hdrline':'#b9d79a','--pat':'rgba(200,240,150,.06)','--btn':'#fff','--rip':'rgba(255,255,255,.4)','--mf':'drop-shadow(0 2px 2px rgba(0,0,0,.6))','--nbg':'rgba(6,28,14,.82)','--nfg':'#fff','--nbd':'#b9d79a'},
+    mark:MATCH},
+  oceano:{name:'Océano',bg:'oceano',sw:['#0a5a8a','#bff0ff'],tc:'#04213f',
+    css:{'--fg':'#fff','--line':'rgba(160,230,255,.6)','--acc':'#9fe6ff','--hdr':'#04213f','--hdrline':'rgba(160,230,255,.7)','--pat':'rgba(160,230,255,.06)','--btn':'#e8fbff','--rip':'rgba(160,230,255,.4)','--mf':'drop-shadow(0 0 4px rgba(120,220,255,.6))','--nbg':'rgba(4,28,56,.8)','--nfg':'#fff','--nbd':'rgba(160,230,255,.7)'},
+    mark:{type:'glow',body:'#c8f3ff',T:5}},
+  carton:{name:'Cartón',bg:'carton',sw:['#c9a26b','#2b1a0c'],tc:'#b78d55',
+    css:{'--fg':'#2b1a0c','--line':'#7a5a30','--acc':'#7a2210','--hdr':'#b78d55','--hdrline':'#7a5a30','--pat':'rgba(60,30,0,.1)','--btn':'#2b1a0c','--rip':'rgba(0,0,0,.2)','--mf':'none','--nbg':'rgba(235,210,160,.9)','--nfg':'#2b1a0c','--nbd':'#7a5a30'},
+    mark:{type:'ink',body:'#2b1a0c',T:4.5}},
+  galaxia:{name:'Galaxia',bg:'galaxia',sw:['#2a1050','#ff9bf0'],tc:'#150a2e',
+    css:{'--fg':'#fff','--line':'rgba(255,150,240,.55)','--acc':'#ff9bf0','--hdr':'#150a2e','--hdrline':'rgba(255,150,240,.7)','--pat':'rgba(255,150,240,.06)','--btn':'#ffd0f8','--rip':'rgba(255,150,240,.4)','--mf':'drop-shadow(0 0 5px rgba(255,120,240,.7))','--nbg':'rgba(20,8,45,.8)','--nfg':'#fff','--nbd':'rgba(255,150,240,.7)'},
+    mark:{type:'glow',body:'#ffb8f4',T:5}}
 };
 let themeKey='madera';
 try{const t=localStorage.getItem('truco-tema');if(THEMES[t])themeKey=t}catch(e){}
@@ -205,7 +301,36 @@ const BG={
     for(let y=0;y<H;y+=6)for(let x=0;x<W;x+=6){const o=((x+y)/6)%2;
       cx.fillStyle=o?'rgba(255,255,255,.045)':'rgba(0,0,0,.35)';cx.fillRect(x,y,3,3);
       cx.fillStyle=o?'rgba(255,255,255,.015)':'rgba(255,255,255,.03)';cx.fillRect(x+3,y+3,3,3)}
-    vignette(W,H,.55)}
+    vignette(W,H,.55)},
+  atardecer(W,H){const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#2a1a4a');g.addColorStop(.45,'#a83c6a');g.addColorStop(.8,'#f08a4b');g.addColorStop(1,'#ffc46b');
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    const sg=cx.createRadialGradient(W/2,H*.82,0,W/2,H*.82,W*.75);sg.addColorStop(0,'rgba(255,240,190,.9)');sg.addColorStop(.12,'rgba(255,200,120,.5)');sg.addColorStop(1,'rgba(255,150,80,0)');
+    cx.fillStyle=sg;cx.fillRect(0,0,W,H);
+    cx.fillStyle='rgba(40,14,50,.88)';cx.beginPath();cx.moveTo(0,H);cx.lineTo(0,H*.9);
+    for(let x=0;x<=W;x+=10)cx.lineTo(x,H*.9-Math.sin(x/W*5+1)*H*.02-Math.sin(x/W*13)*H*.008);cx.lineTo(W,H);cx.fill();
+    vignette(W,H,.25)},
+  bosque(W,H){const r=rng(55);const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0f2a1a');g.addColorStop(1,'#1f5030');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    for(let i=0;i<22;i++){const x=r()*W,w=8+r()*26;cx.fillStyle=`rgba(0,0,0,${.12+r()*.2})`;cx.fillRect(x,0,w,H)}
+    for(let i=0;i<5;i++){const x=r()*W,gr=cx.createLinearGradient(x,0,x+H*.3,H);gr.addColorStop(0,'rgba(220,255,170,.12)');gr.addColorStop(1,'rgba(220,255,170,0)');
+      cx.fillStyle=gr;cx.beginPath();cx.moveTo(x,0);cx.lineTo(x+40+r()*40,0);cx.lineTo(x+H*.35+60,H);cx.lineTo(x+H*.35,H);cx.fill()}
+    for(let i=0;i<W*H/2500;i++){cx.fillStyle=`rgba(190,230,120,${r()*.12})`;cx.beginPath();cx.arc(r()*W,r()*H,1+r()*2,0,7);cx.fill()}
+    vignette(W,H,.5)},
+  oceano(W,H){const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#04213f');g.addColorStop(1,'#0a5a8a');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    for(let k=0;k<26;k++){const y0=k*H/24;cx.beginPath();
+      for(let x=0;x<=W;x+=8){const y=y0+Math.sin(x/38+k*1.7)*7+Math.sin(x/90+k)*5;x?cx.lineTo(x,y):cx.moveTo(x,y)}
+      cx.strokeStyle=`rgba(170,235,255,${.05+(k%3)*.03})`;cx.lineWidth=1.5;cx.stroke()}
+    vignette(W,H,.4)},
+  carton(W,H){const r=rng(61);cx.fillStyle='#c9a26b';cx.fillRect(0,0,W,H);
+    for(let x=0;x<W;x+=5){cx.fillStyle=x%10?'rgba(90,50,10,.05)':'rgba(255,230,170,.06)';cx.fillRect(x,0,2.5,H)}
+    for(let i=0;i<W*H/250;i++){const x=r()*W,y=r()*H,l=2+r()*6,a=r()*3.14;
+      cx.strokeStyle=`rgba(${r()>.5?'80,45,10':'255,225,170'},${.05+r()*.1})`;cx.lineWidth=1;cx.beginPath();cx.moveTo(x,y);cx.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);cx.stroke()}
+    vignette(W,H,.3)},
+  galaxia(W,H){const r=rng(77);cx.fillStyle='#120826';cx.fillRect(0,0,W,H);
+    const cols=['rgba(160,60,220,.35)','rgba(255,80,190,.25)','rgba(60,90,255,.3)','rgba(0,200,255,.15)'];
+    for(let i=0;i<9;i++){const x=r()*W,y=r()*H,rad=H*(.18+r()*.28),gr=cx.createRadialGradient(x,y,0,x,y,rad);
+      gr.addColorStop(0,cols[i%4]);gr.addColorStop(1,'rgba(0,0,0,0)');cx.fillStyle=gr;cx.fillRect(x-rad,y-rad,rad*2,rad*2)}
+    for(let i=0;i<220;i++){cx.fillStyle=`rgba(255,255,255,${.2+r()*.7})`;cx.beginPath();cx.arc(r()*W,r()*H,.3+r()*1.2,0,7);cx.fill()}
+    vignette(W,H,.35)}
 };
 function drawBg(){const d=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
   cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);BG[THEMES[themeKey].bg](W,H)}
@@ -256,8 +381,10 @@ function remove(team,delay){
 function save(){try{localStorage.setItem('truco-anotador',JSON.stringify(state))}catch(e){}}
 function paintWin(){for(let t=0;t<2;t++)document.getElementById('l'+t).classList.toggle('win',state[t]>=MAX)}
 function change(team,d){
-  if(d>0){if(add(team)){state[team]++;sound(true)}}
-  else if(remove(team)){state[team]--;sound(false)}
+  let ok=false;
+  if(d>0){if(add(team)){state[team]++;sound(true);ok=true}}
+  else if(remove(team)){state[team]--;sound(false);ok=true}
+  if(ok)logG('truco',`${team?'Ellos':'Nos'} ${d>0?'+1':'−1'} → ${state[team]}`);
   if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}
   save();paintWin()}
 
@@ -272,17 +399,37 @@ document.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',()=>chan
 document.querySelectorAll('.tap').forEach(r=>r.addEventListener('click',()=>change(+r.dataset.t,1)));
 document.getElementById('nuevo').addEventListener('click',()=>{
   for(let t=0;t<2;t++){const n=els[t].length;for(let i=0;i<n;i++)remove(t,(n-1-i)*22);state[t]=0}
+  TL.length=0;try{localStorage.setItem('truco-log','[]')}catch(e){}
   sound(false);save();paintWin()});
 
 // ---------- menú de estilos ----------
 const menu=document.getElementById('menu'),mbtn=document.getElementById('menuBtn');
+let menuPage='root',game='truco';
+const GAMES={truco:'Truco',generala:'Generala',escoba:'Escoba de 15',chinchon:'Chinchón'};
+const swatch=T=>`<span class="sw" style="background:${T.sw[0]}"><i style="background:${T.sw[1]}"></i></span>`;
 function buildMenu(){
-  menu.innerHTML='<div class="t">Estilo</div>';
-  for(const k in THEMES){const T=THEMES[k],b=document.createElement('button');
-    b.className='opt'+(k===themeKey?' sel':'');b.dataset.k=k;
-    b.innerHTML=`<span class="sw" style="background:${T.sw[0]}"><i style="background:${T.sw[1]}"></i></span>${T.name}<span class="ck">✓</span>`;
-    b.onclick=()=>{setTheme(k);menu.hidden=true};menu.appendChild(b)}}
-mbtn.addEventListener('click',e=>{e.stopPropagation();menu.hidden=!menu.hidden;if(!menu.hidden)buildMenu()});
+  const back=t=>`<button class="opt back" data-m="root"><span>‹</span>${t}</button>`;
+  let h='';
+  if(menuPage==='root'){
+    h=`<div class="t">Menú</div>
+      <button class="opt" data-m="temas">${swatch(THEMES[themeKey])}Temas<span class="chev">›</span></button>
+      <button class="opt" data-m="mas"><span class="sw plus">+</span>Más<span class="chev">›</span></button>`;
+  }else if(menuPage==='temas'){
+    h=back('Temas');
+    for(const k in THEMES)h+=`<button class="opt${k===themeKey?' sel':''}" data-k="${k}">${swatch(THEMES[k])}${THEMES[k].name}<span class="ck">✓</span></button>`;
+  }else{
+    h=back('Más');
+    for(const g in GAMES)h+=`<button class="opt${g===game?' sel':''}" data-game="${g}">${GAMES[g]}<span class="ck">✓</span></button>`;
+  }
+  menu.innerHTML=h;
+}
+menu.addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b)return;
+  if(b.dataset.m){menuPage=b.dataset.m;buildMenu();menu.scrollTop=0;return}
+  if(b.dataset.k){setTheme(b.dataset.k);menu.hidden=true;return}
+  if(b.dataset.game){setGame(b.dataset.game);menu.hidden=true}
+});
+mbtn.addEventListener('click',e=>{e.stopPropagation();menu.hidden=!menu.hidden;if(!menu.hidden){menuPage='root';buildMenu()}});
 document.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!mbtn.contains(e.target))menu.hidden=true});
 addEventListener('keydown',e=>{if(e.key==='Escape')menu.hidden=true});
 
@@ -296,6 +443,159 @@ function setTheme(k){themeKey=k;try{localStorage.setItem('truco-tema',k)}catch(e
   applyCss();drawBg();rebuild()}
 
 applyCss();drawBg();rebuild();paintWin();
+
+// ---------- otros juegos: Generala, Escoba de 15, Chinchón ----------
+const $=s=>document.querySelector(s);
+const G={
+  generala:{n:2,names:['Jugador 1','Jugador 2','Jugador 3','Jugador 4'],cells:{},log:[]},
+  escoba:{names:['Nos','Ellos'],tot:[0,0],target:15,r:{esc:[0,0],c:-1,o:-1,s:-1,v:-1},hist:[],log:[]},
+  chinchon:{n:2,names:['Jugador 1','Jugador 2','Jugador 3','Jugador 4'],limit:100,rounds:[],log:[]}
+};
+try{const s=JSON.parse(localStorage.getItem('truco-juegos'));if(s)for(const k in G)if(s[k])Object.assign(G[k],s[k])}catch(e){}
+function saveG(){try{localStorage.setItem('truco-juegos',JSON.stringify(G))}catch(e){}}
+
+// --- historial de puntos (con hora, minuto y segundo) ---
+const TL=[];try{const s=JSON.parse(localStorage.getItem('truco-log'));if(Array.isArray(s))TL.push(...s)}catch(e){}
+function logG(g,m){
+  const a=g==='truco'?TL:G[g].log;a.push({t:Date.now(),m});
+  if(a.length>300)a.splice(0,a.length-300);
+  if(g==='truco')try{localStorage.setItem('truco-log',JSON.stringify(TL))}catch(e){}
+}
+const pad2=n=>String(n).padStart(2,'0');
+function fmtT(ts){
+  const d=new Date(ts),n=new Date(),t=`${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+  return d.toDateString()===n.toDateString()?t:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)} ${t}`;
+}
+function openHist(){
+  const a=(game==='truco'?TL:G[game].log).slice().reverse();
+  $('#hT').textContent='Historial de puntos · '+GAMES[game];
+  $('#hL').innerHTML=a.length?a.map(x=>`<div class="he"><time>${fmtT(x.t)}</time><span>${E(x.m)}</span></div>`).join('')
+    :'<div class="he empty">Todavía no anotaste nada</div>';
+  $('#hsheet').hidden=false;
+}
+const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nameIn=(g,i)=>`<input class="nm" data-g="${g}" data-i="${i}" value="${E(G[g].names[i])}" maxlength="14" aria-label="Nombre">`;
+const seg=(act,vals,cur,label)=>`<div class="seg"><span>${label}</span>${vals.map(v=>`<button class="b${v==cur?' on':''}" data-act="${act}" data-v="${v}">${v}</button>`).join('')}</div>`;
+
+// --- Generala ---
+const GROWS=[1,2,3,4,5,6].map(n=>({k:String(n),l:String(n),t:'Número '+n,o:[1,2,3,4,5].map(m=>m*n)})).concat([
+  {k:'E',l:'Escalera',t:'Escalera',o:[20,25]},{k:'F',l:'Full',t:'Full',o:[30,35]},{k:'P',l:'Póker',t:'Póker',o:[40,45]},
+  {k:'G',l:'Generala',t:'Generala',o:[50,'S']},{k:'D',l:'Doble gen.',t:'Doble generala',o:[100]}]);
+const gv=(p,k)=>G.generala.cells[p+'-'+k];
+const gTot=p=>GROWS.reduce((s,r)=>{const v=gv(p,r.k);return s+(v==='S'?50:(+v||0))},0);
+function rGen(){
+  const g=G.generala,P=[...Array(g.n).keys()],tot=P.map(gTot),mx=Math.max(...tot);
+  const served=P.find(p=>gv(p,'G')==='S');
+  const done=P.every(p=>GROWS.every(r=>gv(p,r.k)!==undefined));
+  let ban='';
+  if(served!==undefined)ban=`¡${E(g.names[served])} ganó con Generala servida!`;
+  else if(done){const w=P.filter(p=>tot[p]===mx);ban=`${w.length>1?'Empatan':'Ganó'} ${w.map(p=>E(g.names[p])).join(' y ')} con ${mx}`}
+  $('#vGenerala').innerHTML=`${seg('gn',[2,3,4],g.n,'Jugadores')}
+   ${ban?`<div class="ban">${ban}</div>`:''}
+   <div class="card"><table class="gt"><thead><tr><th></th>${P.map(p=>`<th>${nameIn('generala',p)}</th>`).join('')}</tr></thead><tbody>
+   ${GROWS.map(r=>`<tr><td class="rl">${r.l}</td>${P.map(p=>{const v=gv(p,r.k);
+     return `<td><button class="cell${v===0?' x':''}" data-act="cell" data-p="${p}" data-r="${r.k}">${v===undefined?'':v===0?'✕':v==='S'?'50★':v}</button></td>`}).join('')}</tr>`).join('')}
+   <tr class="tot"><td class="rl">Total</td>${P.map(p=>`<td class="${tot[p]===mx&&mx>0?'lead':''}">${tot[p]}</td>`).join('')}</tr>
+   </tbody></table></div>
+   <div class="row"><button class="b" data-act="gnew">Nueva partida</button><button class="b" data-act="hist">Historial de puntos</button></div>`;
+}
+function openSheet(p,rk){
+  const r=GROWS.find(x=>x.k===rk),cur=gv(p,rk),a=`data-act="setcell" data-p="${p}" data-r="${rk}"`;
+  $('#sheetT').textContent=`${G.generala.names[p]} · ${r.t}`;
+  $('#sheetB').innerHTML=r.o.map(v=>`<button class="b${cur===v?' on':''}" ${a} data-v="${v}">${v==='S'?'Servida · gana':v}</button>`).join('')
+    +`<button class="b${cur===0?' on':''}" ${a} data-v="0">Tachar</button><button class="b" ${a} data-v="">Borrar</button>`;
+  $('#sheet').hidden=false;
+}
+
+// --- Escoba de 15 ---
+const ECATS=[['c','Más cartas'],['o','Más oros'],['s','Más sietes'],['v','Siete de oro']];
+const ePts=()=>{const r=G.escoba.r;return[0,1].map(i=>r.esc[i]+ECATS.filter(([k])=>r[k]===i).length)};
+function rEsc(){
+  const g=G.escoba,r=g.r,pts=ePts(),mx=Math.max(...g.tot);
+  const ban=mx>=g.target?(g.tot[0]===g.tot[1]?'Empate, sigan jugando':`¡${E(g.names[g.tot[0]>g.tot[1]?0:1])} ganó!`):'';
+  $('#vEscoba').innerHTML=`${seg('etarget',[15,21],g.target,'Se juega a')}
+   ${ban?`<div class="ban">${ban}</div>`:''}
+   <div class="card two">${[0,1].map(i=>`<div class="pl">${nameIn('escoba',i)}<div class="big${g.tot[i]===mx&&mx>0?' lead':''}">${g.tot[i]}</div>
+     <div class="pm"><button class="b sm" data-act="etot" data-i="${i}" data-d="-1">−</button><button class="b sm" data-act="etot" data-i="${i}" data-d="1">+</button></div></div>`).join('')}</div>
+   <div class="card"><div class="t2">Mano actual</div>
+    <div class="rw"><span>Escobas</span>${[0,1].map(i=>`<div class="ctr"><button class="b sm" data-act="eesc" data-i="${i}" data-d="-1">−</button><b>${r.esc[i]}</b><button class="b sm" data-act="eesc" data-i="${i}" data-d="1">+</button></div>`).join('')}</div>
+    ${ECATS.map(([k,l])=>`<div class="rw"><span>${l}</span>${[0,1].map(i=>`<button class="b${r[k]===i?' on':''}" data-act="ecat" data-k="${k}" data-i="${i}">${E(g.names[i])}</button>`).join('')}</div>`).join('')}
+    <div class="prev">Esta mano: ${E(g.names[0])} +${pts[0]} · ${E(g.names[1])} +${pts[1]}</div>
+    <div class="row"><button class="b on" data-act="eend">Terminar mano</button><button class="b" data-act="eundo" ${g.hist.length?'':'disabled'}>Deshacer mano</button></div></div>
+   ${g.hist.length?`<div class="card hist"><div class="t2">Manos</div>${g.hist.slice(-6).reverse().map((h,j)=>`<div>Mano ${g.hist.length-j}: ${E(g.names[0])} +${h.d[0]} · ${E(g.names[1])} +${h.d[1]}</div>`).join('')}</div>`:''}
+   <div class="row"><button class="b" data-act="enew">Nueva partida</button><button class="b" data-act="hist">Historial de puntos</button></div>`;
+}
+
+// --- Chinchón ---
+const cTot=()=>[...Array(G.chinchon.n).keys()].map(p=>G.chinchon.rounds.reduce((s,r)=>s+(r[p]||0),0));
+function rChi(){
+  const c=G.chinchon,P=[...Array(c.n).keys()],tot=cTot(),act=P.filter(p=>tot[p]<=c.limit);
+  let ban='';
+  if(c.rounds.length){
+    if(act.length===1)ban=`¡${E(c.names[act[0]])} ganó!`;
+    else if(!act.length){const m=Math.min(...tot);ban=`Ganó ${E(c.names[tot.indexOf(m)])} (menos puntos)`}
+  }
+  $('#vChinchon').innerHTML=`${seg('cn',[2,3,4],c.n,'Jugadores')}${seg('climit',[50,100],c.limit,'Se pasa de')}
+   ${ban?`<div class="ban">${ban}</div>`:''}
+   <div class="card"><table class="gt"><thead><tr>${P.map(p=>`<th>${nameIn('chinchon',p)}</th>`).join('')}</tr>
+    <tr class="tot">${P.map(p=>`<td class="${tot[p]>c.limit?'out':''}">${tot[p]}${tot[p]>c.limit?'<small>Fuera</small>':''}</td>`).join('')}</tr></thead>
+    <tbody>${c.rounds.map(r=>`<tr>${P.map(p=>`<td class="${r[p]<0?'neg':''}">${r[p]===null?'–':r[p]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+   ${ban?'':`<div class="card"><div class="t2">Anotar mano</div>
+    <div class="ins">${P.map(p=>tot[p]>c.limit?`<div class="in out">Fuera</div>`:`<div class="in"><input class="ni" type="number" inputmode="numeric" placeholder="0" data-i="${p}"><button class="b sm" data-act="cchip" data-i="${p}">−10</button></div>`).join('')}</div>
+    <div class="row"><button class="b on" data-act="canot">Anotar mano</button></div></div>`}
+   <div class="row"><button class="b" data-act="cundo" ${c.rounds.length?'':'disabled'}>Deshacer mano</button><button class="b" data-act="cnew">Nueva partida</button><button class="b" data-act="hist">Historial de puntos</button></div>`;
+}
+
+function renderGame(){
+  if(game==='generala')rGen();else if(game==='escoba')rEsc();else if(game==='chinchon')rChi();
+}
+function setGame(g){
+  game=g;document.body.dataset.game=g;
+  $('#title').textContent=g==='truco'?'Anotador':GAMES[g];
+  $('#sheet').hidden=true;$('#hsheet').hidden=true;renderGame();
+}
+
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList&&t.classList.contains('nm')){G[t.dataset.g].names[+t.dataset.i]=t.value;saveG()}
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const d=b.dataset,a=d.act,i=+d.i,gen=G.generala,es=G.escoba,ch=G.chinchon;
+  if(a==='closesheet'){$('#sheet').hidden=true;$('#hsheet').hidden=true;return}
+  if(a==='hist'){openHist();return}
+  if(a==='cell'){openSheet(+d.p,d.r);return}
+  if(a==='cchip'){const inp=document.querySelector(`#vChinchon .ni[data-i="${i}"]`);if(inp)inp.value=-10;return}
+  if(a==='setcell'){const k=d.p+'-'+d.r,row=GROWS.find(x=>x.k===d.r);
+    logG('generala',`${gen.names[+d.p]} · ${row.t}: ${d.v===''?'borró':d.v==='0'?'tachó':d.v==='S'?'Servida (gana)':d.v}`);
+    if(d.v==='')delete gen.cells[k];else gen.cells[k]=d.v==='S'?'S':+d.v;$('#sheet').hidden=true}
+  else if(a==='gn')gen.n=+d.v;
+  else if(a==='gnew'){if(!confirm('¿Empezar una partida nueva de Generala?'))return;gen.cells={};gen.log=[]}
+  else if(a==='etarget')es.target=+d.v;
+  else if(a==='etot'){es.tot[i]=Math.max(0,es.tot[i]+ +d.d);logG('escoba',`${es.names[i]} ${+d.d>0?'+1':'−1'} (manual) → ${es.tot[i]}`)}
+  else if(a==='eesc'){es.r.esc[i]=Math.max(0,es.r.esc[i]+ +d.d);logG('escoba',`Escoba ${+d.d>0?'+1':'−1'} · ${es.names[i]} (esta mano: ${es.r.esc[i]})`)}
+  else if(a==='ecat'){const was=es.r[d.k]===i;es.r[d.k]=was?-1:i;
+    logG('escoba',`${ECATS.find(x=>x[0]===d.k)[1]}: ${was?'se sacó a ':''}${es.names[i]}`)}
+  else if(a==='eend'){const p=ePts();es.tot[0]+=p[0];es.tot[1]+=p[1];es.hist.push({d:p});es.r={esc:[0,0],c:-1,o:-1,s:-1,v:-1};
+    logG('escoba',`Mano terminada: ${es.names[0]} +${p[0]} (${es.tot[0]}) · ${es.names[1]} +${p[1]} (${es.tot[1]})`)}
+  else if(a==='eundo'){const h=es.hist.pop();if(h){es.tot[0]=Math.max(0,es.tot[0]-h.d[0]);es.tot[1]=Math.max(0,es.tot[1]-h.d[1]);
+    logG('escoba',`Deshizo la última mano (${es.tot[0]} - ${es.tot[1]})`)}}
+  else if(a==='enew'){if(!confirm('¿Empezar una partida nueva de Escoba?'))return;es.tot=[0,0];es.hist=[];es.log=[];es.r={esc:[0,0],c:-1,o:-1,s:-1,v:-1}}
+  else if(a==='cn'){if(ch.rounds.length&&!confirm('Se borran las manos anotadas. ¿Seguir?'))return;ch.n=+d.v;ch.rounds=[];ch.log=[]}
+  else if(a==='climit')ch.limit=+d.v;
+  else if(a==='canot'){
+    const tot=cTot();
+    ch.rounds.push([...Array(ch.n).keys()].map(p=>{
+      if(tot[p]>ch.limit)return null;
+      const inp=document.querySelector(`#vChinchon .ni[data-i="${p}"]`);return parseInt(inp&&inp.value,10)||0}));
+    const last=ch.rounds[ch.rounds.length-1];
+    logG('chinchon',`Mano ${ch.rounds.length}: `+last.map((v,p)=>`${ch.names[p]} ${v===null?'–':(v>0?'+':'')+v}`).join(' · '));
+  }
+  else if(a==='cundo'){if(ch.rounds.length){ch.rounds.pop();logG('chinchon','Deshizo la última mano')}}
+  else if(a==='cnew'){if(!confirm('¿Empezar una partida nueva de Chinchón?'))return;ch.rounds=[];ch.log=[]}
+  else return;
+  saveG();renderGame();
+});
 
 // ---------- pantalla siempre encendida ----------
 let wl=null;
