@@ -37,6 +37,7 @@
   #menu{position:absolute;right:10px;top:calc(100% + 8px);min-width:210px;padding:8px;border-radius:12px;
     background:rgba(25,16,10,.96);border:1.5px solid #b8892c;box-shadow:0 10px 30px rgba(0,0,0,.55);
     transform-origin:top right;animation:pop .18s ease-out}
+  #menu{max-height:calc(100dvh - 120px);overflow-y:auto}
   #menu[hidden]{display:none}
   @keyframes pop{from{opacity:0;transform:scale(.92) translateY(-6px)}}
   #menu .t{font-size:13px;color:#d6a431;padding:4px 10px 6px;letter-spacing:.5px;text-transform:uppercase}
@@ -124,7 +125,22 @@ const THEMES={
     mark:{type:'ink',body:'#1d3b8b',T:4}},
   noche:{name:'Noche dorada',bg:'night',sw:['#0d1b33','#f7c21c'],tc:'#0a1428',
     css:{'--fg':'#fff','--line':'rgba(247,194,28,.55)','--acc':'#f7c21c','--hdr':'#0a1428','--hdrline':'rgba(247,194,28,.7)','--pat':'rgba(247,194,28,.06)','--btn':'#fff','--rip':'rgba(247,194,28,.4)','--mf':'drop-shadow(0 0 5px rgba(247,194,28,.55))','--nbg':'rgba(8,16,36,.85)','--nfg':'#fff','--nbd':'rgba(247,194,28,.7)'},
-    mark:{type:'glow',body:'#ffd24a',T:5}}
+    mark:{type:'glow',body:'#ffd24a',T:5}},
+  cuero:{name:'Cuero',bg:'leather',sw:['#5a3420','#e8d8a8'],tc:'#3a2013',
+    css:{'--fg':'#fff3d6','--line':'#d8c28a','--acc':'#f1d98f','--hdr':'#3a2013','--hdrline':'#d8c28a','--pat':'rgba(255,230,170,.07)','--btn':'#fff3d6','--rip':'rgba(255,240,200,.4)','--mf':'drop-shadow(0 2px 2px rgba(0,0,0,.65))','--nbg':'rgba(40,22,12,.85)','--nfg':'#fff3d6','--nbd':'#d8c28a'},
+    mark:MATCH},
+  marmol:{name:'Mármol',bg:'marble',sw:['#eceae6','#222'],tc:'#dcd9d2',
+    css:{'--fg':'#1f1f1f','--line':'#8a8478','--acc':'#7a5a12','--hdr':'#dcd9d2','--hdrline':'#9c9484','--pat':'rgba(90,80,60,.08)','--btn':'#1f1f1f','--rip':'rgba(0,0,0,.2)','--mf':'drop-shadow(0 1px 1.5px rgba(0,0,0,.35))','--nbg':'rgba(250,248,244,.92)','--nfg':'#1f1f1f','--nbd':'#8a8478'},
+    mark:{type:'ink',body:'#1c1c1c',T:4.5}},
+  celeste:{name:'Celeste y blanco',bg:'celeste',sw:['#4aa3df','#ffffff'],tc:'#2c7fb8',
+    css:{'--fg':'#fff','--line':'rgba(255,255,255,.7)','--acc':'#fff','--hdr':'#2c7fb8','--hdrline':'rgba(255,255,255,.8)','--pat':'rgba(255,255,255,.08)','--btn':'#fff','--rip':'rgba(255,255,255,.45)','--mf':'drop-shadow(0 2px 2px rgba(0,50,100,.55))','--nbg':'rgba(20,90,150,.75)','--nfg':'#fff','--nbd':'rgba(255,255,255,.85)'},
+    mark:{type:'chalk',body:'#ffffff',T:5.5}},
+  terciopelo:{name:'Terciopelo',bg:'velvet',sw:['#6b0f1a','#e9d8a6'],tc:'#3f0810',
+    css:{'--fg':'#fff','--line':'#d9b45a','--acc':'#f3cf73','--hdr':'#3f0810','--hdrline':'#d9b45a','--pat':'rgba(243,207,115,.08)','--btn':'#fff','--rip':'rgba(255,255,255,.35)','--mf':'drop-shadow(0 2px 2px rgba(0,0,0,.6))','--nbg':'rgba(50,6,14,.85)','--nfg':'#fff','--nbd':'#d9b45a'},
+    mark:MATCH},
+  neon:{name:'Neón',bg:'carbon',sw:['#141414','#39ff88'],tc:'#0b0b0b',
+    css:{'--fg':'#fff','--line':'rgba(57,255,136,.55)','--acc':'#39ff88','--hdr':'#0b0b0b','--hdrline':'rgba(57,255,136,.7)','--pat':'rgba(57,255,136,.05)','--btn':'#39ff88','--rip':'rgba(57,255,136,.4)','--mf':'drop-shadow(0 0 5px rgba(57,255,136,.7))','--nbg':'rgba(10,10,10,.85)','--nfg':'#39ff88','--nbd':'rgba(57,255,136,.7)'},
+    mark:{type:'glow',body:'#7dffb4',T:5}}
 };
 let themeKey='madera';
 try{const t=localStorage.getItem('truco-tema');if(THEMES[t])themeKey=t}catch(e){}
@@ -162,7 +178,34 @@ const BG={
   night(W,H){const r=rng(9);const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0d1b33');g.addColorStop(1,'#1a2c55');
     cx.fillStyle=g;cx.fillRect(0,0,W,H);
     for(let i=0;i<150;i++){cx.fillStyle=`rgba(255,240,200,${.15+r()*.6})`;cx.beginPath();cx.arc(r()*W,r()*H,.4+r()*1.3,0,7);cx.fill()}
-    vignette(W,H,.4)}
+    vignette(W,H,.4)},
+  leather(W,H){const r=rng(21);cx.fillStyle='#5a3420';cx.fillRect(0,0,W,H);
+    for(let i=0;i<W*H/60;i++){const x=r()*W,y=r()*H,a=r()*.14;
+      cx.fillStyle=r()>.5?`rgba(0,0,0,${a})`:`rgba(255,200,140,${a*.6})`;cx.beginPath();cx.arc(x,y,.8+r()*1.6,0,7);cx.fill()}
+    vignette(W,H,.5);
+    cx.save();cx.setLineDash([9,7]);cx.lineWidth=2.2;cx.strokeStyle='rgba(235,215,160,.75)';cx.strokeRect(10,10,W-20,H-20);cx.restore()},
+  marble(W,H){const r=rng(33);const g=cx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#f3f1ed');g.addColorStop(1,'#dedbd4');
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    for(let i=0;i<14;i++){let x=r()*W,y=r()*H,a=r()*6.28;cx.beginPath();cx.moveTo(x,y);
+      for(let s=0;s<40;s++){a+=(r()-.5)*.9;x+=Math.cos(a)*(14+r()*14);y+=Math.sin(a)*(14+r()*14);cx.lineTo(x,y)}
+      cx.strokeStyle=`rgba(90,90,100,${.08+r()*.16})`;cx.lineWidth=.6+r()*2.2;cx.stroke()}
+    for(let i=0;i<W*H/900;i++){cx.fillStyle=`rgba(0,0,0,${r()*.04})`;cx.fillRect(r()*W,r()*H,1.5,1.5)}
+    vignette(W,H,.14)},
+  celeste(W,H){const r=rng(17);const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#3d97d8');g.addColorStop(1,'#7cc4f0');
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    for(let i=0;i<9;i++){const x=r()*W,y=H*.15+r()*H*.75,rw=70+r()*120;
+      for(let k=0;k<5;k++){const gx=x+(k-2)*rw*.35,gy=y+(r()-.5)*18,gr=rw*(.35+r()*.25),gg=cx.createRadialGradient(gx,gy,0,gx,gy,gr);
+        gg.addColorStop(0,'rgba(255,255,255,.28)');gg.addColorStop(1,'rgba(255,255,255,0)');cx.fillStyle=gg;cx.fillRect(gx-gr,gy-gr,gr*2,gr*2)}}
+    vignette(W,H,.22)},
+  velvet(W,H){const r=rng(41);const g=cx.createRadialGradient(W/2,H*.4,10,W/2,H*.4,H*.8);g.addColorStop(0,'#8a1626');g.addColorStop(1,'#4a0a13');
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    for(let i=0;i<W*H/25;i++){cx.fillStyle=r()>.5?'rgba(255,170,170,.05)':'rgba(0,0,0,.09)';cx.fillRect(r()*W,r()*H,1.4,1.4)}
+    vignette(W,H,.5)},
+  carbon(W,H){cx.fillStyle='#101010';cx.fillRect(0,0,W,H);
+    for(let y=0;y<H;y+=6)for(let x=0;x<W;x+=6){const o=((x+y)/6)%2;
+      cx.fillStyle=o?'rgba(255,255,255,.045)':'rgba(0,0,0,.35)';cx.fillRect(x,y,3,3);
+      cx.fillStyle=o?'rgba(255,255,255,.015)':'rgba(255,255,255,.03)';cx.fillRect(x+3,y+3,3,3)}
+    vignette(W,H,.55)}
 };
 function drawBg(){const d=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
   cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);BG[THEMES[themeKey].bg](W,H)}
@@ -253,6 +296,19 @@ function setTheme(k){themeKey=k;try{localStorage.setItem('truco-tema',k)}catch(e
   applyCss();drawBg();rebuild()}
 
 applyCss();drawBg();rebuild();paintWin();
+
+// ---------- pantalla siempre encendida ----------
+let wl=null;
+async function keepAwake(){
+  try{
+    if(!('wakeLock' in navigator)||document.visibilityState!=='visible'||wl)return;
+    wl=await navigator.wakeLock.request('screen');
+    wl.addEventListener('release',()=>{wl=null});
+  }catch(e){wl=null}
+}
+keepAwake();
+document.addEventListener('visibilitychange',keepAwake);
+addEventListener('pointerdown',keepAwake);
 
 // ---------- app instalable ----------
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))
