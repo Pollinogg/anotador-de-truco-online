@@ -4,64 +4,98 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>Anotador de Truco</title>
+<meta name="theme-color" content="#2b1a10" id="themeColor">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Truco">
 <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-  html,body{margin:0;height:100%;background:#1e120b;overflow:hidden}
-  body{font-family:'Titillium Web',system-ui,sans-serif;color:#fff}
-  #wood{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  :root{--fg:#fff;--line:#9a7226;--acc:#f7c21c;--hdr:#2b1a10;--hdrline:#b8892c;--pat:rgba(255,200,90,.07);
+        --btn:#fff;--rip:rgba(255,255,255,.4);--mf:drop-shadow(0 2px 2px rgba(0,0,0,.65));
+        --nbg:rgba(20,12,8,.85);--nfg:#fff;--nbd:#b8892c}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  html,body{margin:0;height:100%;background:#1e120b;overflow:hidden;overscroll-behavior:none}
+  body{font-family:'Titillium Web',system-ui,sans-serif;color:var(--fg)}
+  #bgc{position:fixed;inset:0;width:100%;height:100%;z-index:0}
   #app{position:relative;z-index:1;max-width:520px;height:100dvh;margin:0 auto;display:flex;flex-direction:column;
-       box-shadow:0 0 60px rgba(0,0,0,.7)}
-  header{height:clamp(56px,9vh,76px);flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 14px;
-    border-bottom:2px solid #b8892c;
+       box-shadow:0 0 60px rgba(0,0,0,.45)}
+  header{position:relative;z-index:5;flex:none;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;
+    padding:env(safe-area-inset-top) 14px 0;height:calc(clamp(56px,9vh,76px) + env(safe-area-inset-top));
+    border-bottom:2px solid var(--hdrline);
     background:
-      radial-gradient(circle at 50% 120%,transparent 0 9px,rgba(255,200,90,.07) 10px 11px,transparent 12px) 0 0/26px 26px,
-      radial-gradient(circle at 0% 100%,transparent 0 9px,rgba(255,200,90,.07) 10px 11px,transparent 12px) 0 0/26px 26px,
-      #2b1a10}
-  header h1{margin:0;font-weight:400;font-size:clamp(22px,5.4vw,28px);color:#f7c21c;letter-spacing:.3px}
-  .ic{width:34px;height:34px;border:1.5px solid #b8892c;border-radius:50%;display:grid;place-items:center;opacity:.9}
-  .ic svg{width:20px;height:20px;stroke:#d6a431;fill:none;stroke-width:1.6;stroke-linecap:round}
+      radial-gradient(circle at 50% 120%,transparent 0 9px,var(--pat) 10px 11px,transparent 12px) 0 0/26px 26px,
+      radial-gradient(circle at 0% 100%,transparent 0 9px,var(--pat) 10px 11px,transparent 12px) 0 0/26px 26px,
+      var(--hdr);transition:background-color .3s}
+  header h1{margin:0;text-align:center;font-weight:400;font-size:clamp(22px,5.4vw,28px);color:var(--acc);letter-spacing:.3px}
+  #menuBtn{justify-self:end;width:36px;height:36px;border:1.5px solid var(--hdrline);border-radius:50%;background:none;display:grid;place-items:center;cursor:pointer;padding:0}
+  #menuBtn svg{width:20px;height:20px;stroke:var(--acc);fill:none;stroke-width:1.8;stroke-linecap:round}
+  #menuBtn:active{background:rgba(255,255,255,.12)}
+  #menu{position:absolute;right:10px;top:calc(100% + 8px);min-width:210px;padding:8px;border-radius:12px;
+    background:rgba(25,16,10,.96);border:1.5px solid #b8892c;box-shadow:0 10px 30px rgba(0,0,0,.55);
+    transform-origin:top right;animation:pop .18s ease-out}
+  #menu[hidden]{display:none}
+  @keyframes pop{from{opacity:0;transform:scale(.92) translateY(-6px)}}
+  #menu .t{font-size:13px;color:#d6a431;padding:4px 10px 6px;letter-spacing:.5px;text-transform:uppercase}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;padding:9px 10px;border:0;border-radius:8px;background:none;color:#fff;
+    font:400 18px 'Titillium Web',sans-serif;cursor:pointer;text-align:left}
+  .opt:active{background:rgba(255,255,255,.1)}
+  .opt.sel{background:rgba(247,194,28,.14)}
+  .sw{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.7);flex:none;position:relative;overflow:hidden}
+  .sw i{position:absolute;inset:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
+  .ck{margin-left:auto;color:#f7c21c;opacity:0}
+  .opt.sel .ck{opacity:1}
   main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center}
   #board{width:100%;flex:none;display:block;touch-action:manipulation}
-  .lbl{font:400 46px 'Titillium Web',sans-serif;fill:#fff;text-anchor:middle}
-  .gl{stroke:#9a7226;stroke-width:2.5}
-  .btn circle{fill:rgba(0,0,0,.001);stroke:#fff;stroke-width:4.5;transition:fill .15s}
-  .btn path{stroke:#fff;stroke-width:5;stroke-linecap:round;fill:none}
+  .lbl{font:400 46px 'Titillium Web',sans-serif;fill:var(--fg);text-anchor:middle;transition:fill .3s}
+  .gl{stroke:var(--line);stroke-width:2.5}
+  .tap{fill:transparent;cursor:pointer}
+  .btn circle{fill:rgba(0,0,0,.001);stroke:var(--btn);stroke-width:4.5;transition:fill .15s}
+  .btn path{stroke:var(--btn);stroke-width:5;stroke-linecap:round;fill:none}
   .btn{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .12s}
   .btn:active{transform:scale(.88)}
-  .btn:active circle{fill:rgba(255,255,255,.25)}
-  .matches{filter:drop-shadow(0 2px 2px rgba(0,0,0,.65))}
+  .btn:active circle{fill:var(--rip)}
+  .matches{filter:var(--mf)}
   .m{transform-box:fill-box;transform-origin:center}
   .m.in{animation:drop .42s cubic-bezier(.2,.9,.3,1.25) both}
   .m.out{animation:away .34s ease-in forwards}
   @keyframes drop{0%{opacity:0;transform:translate(0,-34px) rotate(50deg) scale(1.6)}
                   60%{opacity:1}100%{opacity:1;transform:none}}
   @keyframes away{to{opacity:0;transform:translate(0,40px) rotate(-70deg) scale(.7)}}
+  .rip{fill:var(--rip);transform-box:fill-box;transform-origin:center;animation:rip .45s ease-out forwards;pointer-events:none}
+  @keyframes rip{from{opacity:.9;transform:scale(.4)}to{opacity:0;transform:scale(2.6)}}
   .win{animation:glow 1s ease-in-out infinite alternate}
-  @keyframes glow{from{fill:#fff}to{fill:#ffd24a}}
+  @keyframes glow{from{fill:var(--fg)}to{fill:var(--acc)}}
   #spacer{flex:1}
-  #nuevo{flex:none;margin-bottom:clamp(20px,5vh,54px);padding:9px 20px;font:400 18px 'Titillium Web',sans-serif;color:#fff;
-    background:rgba(20,12,8,.85);border:1.5px solid #b8892c;border-radius:9px;cursor:pointer;transition:transform .12s,background .15s}
-  #nuevo:active{transform:scale(.94);background:rgba(90,60,20,.9)}
+  #nuevo{flex:none;margin-bottom:calc(clamp(20px,5vh,54px) + env(safe-area-inset-bottom));padding:9px 20px;font:400 18px 'Titillium Web',sans-serif;
+    color:var(--nfg);background:var(--nbg);border:1.5px solid var(--nbd);border-radius:9px;cursor:pointer;transition:transform .12s}
+  #nuevo:active{transform:scale(.94)}
 </style>
 </head>
 <body>
-<canvas id="wood"></canvas>
+<canvas id="bgc"></canvas>
 <div id="app">
   <header>
-    <div class="ic"><svg viewBox="0 0 24 24"><path d="M19 12H6M11 6l-6 6 6 6"/></svg></div>
+    <span></span>
     <h1>Anotador</h1>
-    <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 8h12M6 12h12M6 16h12"/></svg></div>
+    <button id="menuBtn" aria-label="Estilos" aria-haspopup="true"><svg viewBox="0 0 24 24"><path d="M6 8h12M6 12h12M6 16h12"/></svg></button>
+    <div id="menu" hidden></div>
   </header>
   <main>
     <svg id="board" viewBox="0 0 720 740" aria-label="Anotador de truco">
+      <rect class="tap" data-t="0" x="0" y="80" width="360" height="660"/>
+      <rect class="tap" data-t="1" x="360" y="80" width="360" height="660"/>
       <line class="gl" x1="150" y1="80" x2="570" y2="80"/>
       <line class="gl" x1="150" y1="398" x2="570" y2="398"/>
       <line class="gl" x1="360" y1="10" x2="360" y2="720"/>
       <text class="lbl" id="l0" x="255" y="62">Nos:</text>
       <text class="lbl" id="l1" x="465" y="62">Ellos:</text>
-      <g class="matches" id="g0"></g>
-      <g class="matches" id="g1"></g>
+      <g class="matches" id="g0" pointer-events="none"></g>
+      <g class="matches" id="g1" pointer-events="none"></g>
+      <g id="rips" pointer-events="none"></g>
       <g class="btn" data-t="0" data-d="1"><circle cx="90" cy="355" r="36"/><path d="M72 355h36M90 337v36"/></g>
       <g class="btn" data-t="0" data-d="-1"><circle cx="90" cy="445" r="36"/><path d="M72 445h36"/></g>
       <g class="btn" data-t="1" data-d="1"><circle cx="630" cy="355" r="36"/><path d="M612 355h36M630 337v36"/></g>
@@ -73,110 +107,156 @@
 </div>
 
 <script>
-// ---------- fondo de madera ----------
-(function(){
-  const c=document.getElementById('wood'),x=c.getContext('2d');
-  function rng(s){return()=>(s=(s*16807)%2147483647)/2147483647}
-  function draw(){
-    const dpr=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
-    c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);
-    const r=rng(7);let px=0;
-    while(px<W){
-      const w=46+r()*60,l=14+r()*7;
-      x.fillStyle=`hsl(${18+r()*6},${38+r()*10}%,${l}%)`;x.fillRect(px,0,w+1,H);
-      // vetas
-      for(let i=0;i<w/2.2;i++){
-        const gx=px+r()*w,a=.05+r()*.12;
-        x.strokeStyle=r()>.5?`rgba(0,0,0,${a})`:`rgba(255,190,120,${a*.5})`;
-        x.lineWidth=.5+r()*1.4;x.beginPath();x.moveTo(gx,0);
-        let yy=0;while(yy<H){yy+=60+r()*120;x.lineTo(gx+(r()-.5)*2.5,yy)}x.stroke();
-      }
-      // cortes horizontales de tablas
+// ---------- estilos ----------
+const MATCH={type:'match',body:'#ecd9a8',shade:'#b9a06a',head:'#c8281c',hl:'#ff6a4a',T:5};
+const THEMES={
+  madera:{name:'Madera',bg:'wood',sw:['#4a2a1a','#ecd9a8'],tc:'#2b1a10',
+    css:{'--fg':'#fff','--line':'#9a7226','--acc':'#f7c21c','--hdr':'#2b1a10','--hdrline':'#b8892c','--pat':'rgba(255,200,90,.07)','--btn':'#fff','--rip':'rgba(255,255,255,.4)','--mf':'drop-shadow(0 2px 2px rgba(0,0,0,.65))','--nbg':'rgba(20,12,8,.85)','--nfg':'#fff','--nbd':'#b8892c'},
+    mark:MATCH},
+  pano:{name:'Paño verde',bg:'felt',sw:['#1c6b3c','#ecd9a8'],tc:'#0f3d22',
+    css:{'--fg':'#fff','--line':'#d9c27a','--acc':'#ffe28a','--hdr':'#0f3d22','--hdrline':'#d9c27a','--pat':'rgba(255,240,170,.08)','--btn':'#fff','--rip':'rgba(255,255,255,.4)','--mf':'drop-shadow(0 2px 2px rgba(0,0,0,.6))','--nbg':'rgba(8,40,22,.85)','--nfg':'#fff','--nbd':'#d9c27a'},
+    mark:MATCH},
+  pizarra:{name:'Pizarrón',bg:'chalk',sw:['#2b3a35','#ffffff'],tc:'#1b2622',
+    css:{'--fg':'#f3f3ee','--line':'rgba(255,255,255,.5)','--acc':'#f3f3ee','--hdr':'#1b2622','--hdrline':'rgba(255,255,255,.55)','--pat':'rgba(255,255,255,.04)','--btn':'#f3f3ee','--rip':'rgba(255,255,255,.35)','--mf':'drop-shadow(0 0 2px rgba(255,255,255,.35))','--nbg':'rgba(20,28,25,.8)','--nfg':'#f3f3ee','--nbd':'rgba(255,255,255,.6)'},
+    mark:{type:'chalk',body:'#f7f7f2',T:5}},
+  papel:{name:'Papel y birome',bg:'paper',sw:['#f4eedc','#1d3b8b'],tc:'#e9e0c4',
+    css:{'--fg':'#222','--line':'#7d8aa8','--acc':'#1d3b8b','--hdr':'#e9e0c4','--hdrline':'#a89a6c','--pat':'rgba(120,100,50,.1)','--btn':'#222','--rip':'rgba(29,59,139,.25)','--mf':'none','--nbg':'rgba(255,252,240,.9)','--nfg':'#222','--nbd':'#7d8aa8'},
+    mark:{type:'ink',body:'#1d3b8b',T:4}},
+  noche:{name:'Noche dorada',bg:'night',sw:['#0d1b33','#f7c21c'],tc:'#0a1428',
+    css:{'--fg':'#fff','--line':'rgba(247,194,28,.55)','--acc':'#f7c21c','--hdr':'#0a1428','--hdrline':'rgba(247,194,28,.7)','--pat':'rgba(247,194,28,.06)','--btn':'#fff','--rip':'rgba(247,194,28,.4)','--mf':'drop-shadow(0 0 5px rgba(247,194,28,.55))','--nbg':'rgba(8,16,36,.85)','--nfg':'#fff','--nbd':'rgba(247,194,28,.7)'},
+    mark:{type:'glow',body:'#ffd24a',T:5}}
+};
+let themeKey='madera';
+try{const t=localStorage.getItem('truco-tema');if(THEMES[t])themeKey=t}catch(e){}
+
+// ---------- fondos ----------
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+function rng(s){return()=>(s=(s*16807)%2147483647)/2147483647}
+function vignette(W,H,a){const g=cx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.9);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(0,0,0,${a})`);cx.fillStyle=g;cx.fillRect(0,0,W,H)}
+const BG={
+  wood(W,H){const r=rng(7);let px=0;
+    while(px<W){const w=46+r()*60,l=14+r()*7;
+      cx.fillStyle=`hsl(${18+r()*6},${38+r()*10}%,${l}%)`;cx.fillRect(px,0,w+1,H);
+      for(let i=0;i<w/2.2;i++){const gx=px+r()*w,a=.05+r()*.12;
+        cx.strokeStyle=r()>.5?`rgba(0,0,0,${a})`:`rgba(255,190,120,${a*.5})`;cx.lineWidth=.5+r()*1.4;cx.beginPath();cx.moveTo(gx,0);
+        let yy=0;while(yy<H){yy+=60+r()*120;cx.lineTo(gx+(r()-.5)*2.5,yy)}cx.stroke()}
       let yy=r()*220;
-      while(yy<H){x.fillStyle='rgba(0,0,0,.35)';x.fillRect(px,yy,w,1.5);
-        x.fillStyle=`rgba(0,0,0,${r()*.12})`;x.fillRect(px,yy+1.5,w,H);yy+=180+r()*420}
-      x.fillStyle='rgba(0,0,0,.55)';x.fillRect(px+w-1,0,2,H);
-      px+=w;
-    }
-    const g=x.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.9);
-    g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.5)');
-    x.fillStyle=g;x.fillRect(0,0,W,H);
-  }
-  draw();addEventListener('resize',draw);
-})();
+      while(yy<H){cx.fillStyle='rgba(0,0,0,.35)';cx.fillRect(px,yy,w,1.5);cx.fillStyle=`rgba(0,0,0,${r()*.12})`;cx.fillRect(px,yy+1.5,w,H);yy+=180+r()*420}
+      cx.fillStyle='rgba(0,0,0,.55)';cx.fillRect(px+w-1,0,2,H);px+=w}
+    vignette(W,H,.5)},
+  felt(W,H){const r=rng(11);cx.fillStyle='#1c6b3c';cx.fillRect(0,0,W,H);
+    for(let i=0;i<W*H/40;i++){cx.fillStyle=r()>.5?'rgba(255,255,255,.045)':'rgba(0,0,0,.07)';cx.fillRect(r()*W,r()*H,1.6,1.6)}
+    vignette(W,H,.55)},
+  chalk(W,H){const r=rng(5);cx.fillStyle='#2b3a35';cx.fillRect(0,0,W,H);
+    for(let i=0;i<55;i++){const x=r()*W,y=r()*H,rad=60+r()*220,g=cx.createRadialGradient(x,y,0,x,y,rad);
+      g.addColorStop(0,`rgba(255,255,255,${.02+r()*.045})`);g.addColorStop(1,'rgba(255,255,255,0)');cx.fillStyle=g;cx.fillRect(x-rad,y-rad,rad*2,rad*2)}
+    for(let i=0;i<W*H/900;i++){cx.fillStyle=`rgba(255,255,255,${r()*.05})`;cx.fillRect(r()*W,r()*H,1.5,1.5)}
+    vignette(W,H,.45)},
+  paper(W,H){const r=rng(3);cx.fillStyle='#f4eedc';cx.fillRect(0,0,W,H);
+    cx.strokeStyle='rgba(120,160,205,.45)';cx.lineWidth=1;
+    for(let x=0;x<W;x+=30){cx.beginPath();cx.moveTo(x+.5,0);cx.lineTo(x+.5,H);cx.stroke()}
+    for(let y=0;y<H;y+=30){cx.beginPath();cx.moveTo(0,y+.5);cx.lineTo(W,y+.5);cx.stroke()}
+    for(let i=0;i<W*H/700;i++){cx.fillStyle=`rgba(120,90,40,${r()*.06})`;cx.fillRect(r()*W,r()*H,1.5,1.5)}
+    vignette(W,H,.18)},
+  night(W,H){const r=rng(9);const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0d1b33');g.addColorStop(1,'#1a2c55');
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    for(let i=0;i<150;i++){cx.fillStyle=`rgba(255,240,200,${.15+r()*.6})`;cx.beginPath();cx.arc(r()*W,r()*H,.4+r()*1.3,0,7);cx.fill()}
+    vignette(W,H,.4)}
+};
+function drawBg(){const d=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
+  cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);BG[THEMES[themeKey].bg](W,H)}
+addEventListener('resize',drawBg);
 
 // ---------- anotador ----------
-const NS='http://www.w3.org/2000/svg',S=64,T=5,HEAD=10;
-const state=[0,0],els=[[],[]],MAX=30;
+const NS='http://www.w3.org/2000/svg',S=64,MAX=30,HEAD=10;
+const state=[0,0],els=[[],[]];
 try{const s=JSON.parse(localStorage.getItem('truco-anotador'));if(Array.isArray(s))s.forEach((v,i)=>state[i]=Math.max(0,Math.min(MAX,v|0)))}catch(e){}
-
-// segmentos de cada fosforo: [x1,y1,x2,y2] (cabeza en x1,y1)
 const SEG=[[0,0,0,S],[S,0,0,0],[S,S,S,0],[0,S,S,S],[S-3,5,7,S-7]];
-
-function pos(p,team){
-  const box=Math.floor(p/5),half=box>=3?1:0,row=box%3;
-  return [team?437:218,(half?435:108)+row*96];
-}
+function pos(p,team){const box=Math.floor(p/5),half=box>=3?1:0,row=box%3;return[team?437:218,(half?435:108)+row*96]}
 function mk(tag,a){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);return e}
-function jitter(i,t){return Math.sin(i*12.9898+t*78.233)*43758.5453%1}
+function jit(i,t,s){const v=Math.sin(i*12.9898+t*78.233)*43758.5453;return(v-Math.floor(v)-.5)*2*s}
 
 function makeMatch(team,p){
-  const [bx,by]=pos(p,team),k=p%5,[x1,y1,x2,y2]=SEG[k];
-  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)+(k==4?0:T),ang=Math.atan2(dy,dx)*180/Math.PI;
-  const j=jitter(p,team)*1.6;
-  const outer=mk('g',{transform:`translate(${bx+x1+(k==4?0:0)},${by+y1}) rotate(${ang+j})`});
+  const M=THEMES[themeKey].mark,[bx,by]=pos(p,team),k=p%5,[x1,y1,x2,y2]=SEG[k],T=M.T;
+  const hand=M.type!=='match',amp=hand?2.6:1.6;
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)+T+(hand?jit(p,team+3,2.5):0),ang=Math.atan2(dy,dx)*180/Math.PI;
+  const outer=mk('g',{transform:`translate(${bx+x1+(hand?jit(p,team+9,1.8):0)},${by+y1+(hand?jit(p,team+5,1.8):0)}) rotate(${ang+jit(p,team,amp)})`});
   const g=mk('g',{class:'m'});
-  const body=mk('rect',{x:-T/2,y:-T/2,width:len,height:T,rx:2,fill:'#ecd9a8'});
-  const shade=mk('rect',{x:-T/2,y:T/2-1.6,width:len,height:1.6,rx:1,fill:'#b9a06a'});
-  const head=mk('rect',{x:-T/2-1,y:-T/2-1.2,width:HEAD,height:T+2.4,rx:3,fill:'#c8281c'});
-  const hl=mk('rect',{x:-T/2+1,y:-T/2-.6,width:HEAD-4,height:1.6,rx:1,fill:'#ff6a4a'});
-  g.append(body,shade,head,hl);outer.append(g);
-  return outer;
+  if(M.type==='match'){
+    g.append(mk('rect',{x:-T/2,y:-T/2,width:len,height:T,rx:2,fill:M.body}),
+      mk('rect',{x:-T/2,y:T/2-1.6,width:len,height:1.6,rx:1,fill:M.shade}),
+      mk('rect',{x:-T/2-1,y:-T/2-1.2,width:HEAD,height:T+2.4,rx:3,fill:M.head}),
+      mk('rect',{x:-T/2+1,y:-T/2-.6,width:HEAD-4,height:1.6,rx:1,fill:M.hl}));
+  }else{
+    g.append(mk('rect',{x:-T/2,y:-T/2,width:len,height:T,rx:T/2,fill:M.body,opacity:M.type==='chalk'?.93:1}));
+    if(M.type==='chalk')g.append(mk('rect',{x:-T/2+3,y:-T/2+1,width:len-6,height:1.2,rx:.6,fill:'#fff',opacity:.5}));
+  }
+  outer.append(g);return outer;
 }
-
-function sound(up){
-  try{
-    const A=sound.a||(sound.a=new (window.AudioContext||window.webkitAudioContext)());
-    const t=A.currentTime,o=A.createOscillator(),gn=A.createGain();
-    o.type='triangle';o.frequency.setValueAtTime(up?520:300,t);o.frequency.exponentialRampToValueAtTime(up?260:150,t+.07);
-    gn.gain.setValueAtTime(.12,t);gn.gain.exponentialRampToValueAtTime(.001,t+.09);
-    o.connect(gn).connect(A.destination);o.start(t);o.stop(t+.1);
-  }catch(e){}
-}
-
+function sound(up){try{
+  const A=sound.a||(sound.a=new(window.AudioContext||window.webkitAudioContext)());
+  const t=A.currentTime,o=A.createOscillator(),gn=A.createGain();
+  o.type='triangle';o.frequency.setValueAtTime(up?520:300,t);o.frequency.exponentialRampToValueAtTime(up?260:150,t+.07);
+  gn.gain.setValueAtTime(.12,t);gn.gain.exponentialRampToValueAtTime(.001,t+.09);
+  o.connect(gn).connect(A.destination);o.start(t);o.stop(t+.1)}catch(e){}}
 function add(team,delay){
   const p=els[team].length;if(p>=MAX)return false;
   const m=makeMatch(team,p);m.firstChild.classList.add('in');
   if(delay)m.firstChild.style.animationDelay=delay+'ms';
-  document.getElementById('g'+team).appendChild(m);els[team].push(m);return true;
-}
+  document.getElementById('g'+team).appendChild(m);els[team].push(m);return true}
 function remove(team,delay){
   const m=els[team].pop();if(!m)return false;
   const g=m.firstChild;g.classList.remove('in');g.classList.add('out');
   if(delay)g.style.animationDelay=delay+'ms';
-  setTimeout(()=>m.remove(),400+(delay||0));return true;
-}
+  setTimeout(()=>m.remove(),400+(delay||0));return true}
 function save(){try{localStorage.setItem('truco-anotador',JSON.stringify(state))}catch(e){}}
 function paintWin(){for(let t=0;t<2;t++)document.getElementById('l'+t).classList.toggle('win',state[t]>=MAX)}
-
 function change(team,d){
   if(d>0){if(add(team)){state[team]++;sound(true)}}
   else if(remove(team)){state[team]--;sound(false)}
   if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}
-  save();paintWin();
-}
+  save();paintWin()}
 
-document.querySelectorAll('.btn').forEach(b=>{
-  b.addEventListener('click',()=>change(+b.dataset.t,+b.dataset.d));
-});
+// toques: botones +/- y tocar la zona de tantos suma
+const board=document.getElementById('board'),rips=document.getElementById('rips');
+function ripple(e){
+  const pt=board.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const p=pt.matrixTransform(board.getScreenCTM().inverse());
+  const c=mk('circle',{class:'rip',cx:p.x,cy:p.y,r:26});rips.appendChild(c);setTimeout(()=>c.remove(),500)}
+board.addEventListener('pointerdown',ripple);
+document.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',()=>change(+b.dataset.t,+b.dataset.d)));
+document.querySelectorAll('.tap').forEach(r=>r.addEventListener('click',()=>change(+r.dataset.t,1)));
 document.getElementById('nuevo').addEventListener('click',()=>{
   for(let t=0;t<2;t++){const n=els[t].length;for(let i=0;i<n;i++)remove(t,(n-1-i)*22);state[t]=0}
-  sound(false);save();paintWin();
-});
+  sound(false);save();paintWin()});
 
-// estado inicial (sin animar de a uno: entran escalonados)
-for(let t=0;t<2;t++)for(let i=0;i<state[t];i++)add(t,i*30);
-paintWin();
+// ---------- menú de estilos ----------
+const menu=document.getElementById('menu'),mbtn=document.getElementById('menuBtn');
+function buildMenu(){
+  menu.innerHTML='<div class="t">Estilo</div>';
+  for(const k in THEMES){const T=THEMES[k],b=document.createElement('button');
+    b.className='opt'+(k===themeKey?' sel':'');b.dataset.k=k;
+    b.innerHTML=`<span class="sw" style="background:${T.sw[0]}"><i style="background:${T.sw[1]}"></i></span>${T.name}<span class="ck">✓</span>`;
+    b.onclick=()=>{setTheme(k);menu.hidden=true};menu.appendChild(b)}}
+mbtn.addEventListener('click',e=>{e.stopPropagation();menu.hidden=!menu.hidden;if(!menu.hidden)buildMenu()});
+document.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!mbtn.contains(e.target))menu.hidden=true});
+addEventListener('keydown',e=>{if(e.key==='Escape')menu.hidden=true});
+
+function applyCss(){const T=THEMES[themeKey];
+  for(const k in T.css)document.documentElement.style.setProperty(k,T.css[k]);
+  document.getElementById('themeColor').setAttribute('content',T.tc)}
+function rebuild(){
+  for(let t=0;t<2;t++){document.getElementById('g'+t).innerHTML='';els[t]=[]}
+  for(let t=0;t<2;t++)for(let i=0;i<state[t];i++)add(t,i*25)}
+function setTheme(k){themeKey=k;try{localStorage.setItem('truco-tema',k)}catch(e){}
+  applyCss();drawBg();rebuild()}
+
+applyCss();drawBg();rebuild();paintWin();
+
+// ---------- app instalable ----------
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
